@@ -10,11 +10,11 @@ public class Graph {
         Edge() {};
     };
    private Vector<Vector<Vector<Integer>>> graph;
-   private Vector<Edge> edges;
+   private Edge[] edges;
    private int V;
    private int E;
 
-    public Vector<Edge> getEdges() {
+    public Edge[] getEdges() {
         return edges;
     }
 
@@ -30,27 +30,32 @@ public class Graph {
         return E;
     }
 
-    void graphInit(String src)
+    boolean graphInit(String src)
     {
         try {
             File myObj = new File(src);
             Scanner myReader = new Scanner(myObj);
+            if(myReader.hasNext()==false){
+                System.out.println("text file is empty");
+                return false;
+            }
             String data = myReader.nextLine();
-            List<Integer> ints = (List<Integer>) Arrays.stream(data.split(", "))
+
+            List<Integer> ints = (List<Integer>) Arrays.stream(data.split(" "))
                     .map(Integer::parseInt)
                     .collect(Collectors.toList());
             V= ints.get(0);
             E=ints.get(1);
             graph=new Vector<>(V);
-            edges=new Vector<>(E);
+            edges=new Edge[E];
             for(int i=0;i<V;i++)
                 graph.add(new Vector<>());
-            for(int i=0;i<E;i++)
-                edges.add(i,new Edge());
+           for(int i=0;i<E;i++)
+                edges[i]=new Edge();
             int cnt=0;
             while (myReader.hasNextLine()) {
-                 data = myReader.nextLine();
-                List<Integer> intss = (List<Integer>) Arrays.stream(data.split(", "))
+                data = myReader.nextLine();
+                List<Integer> intss = (List<Integer>) Arrays.stream(data.split(" "))
                         .map(Integer::parseInt)
                         .collect(Collectors.toList());
                 Vector<Integer> temp=new Vector<>(2);
@@ -58,18 +63,20 @@ public class Graph {
                 temp.add(0,intss.get(1));
                 temp.add(1, intss.get(2));
                 graph.get(i).add(temp);
-                edges.get(cnt).s=i;
-                edges.get(cnt).d=intss.get(1);
-                edges.get(cnt).w=intss.get(2);
+                edges[cnt].s=i;
+                edges[cnt].d=intss.get(1);
+                edges[cnt].w=intss.get(2);
                 cnt++;
             }
             myReader.close();
         } catch (FileNotFoundException e) {
-            System.out.println("An error occurred.");
-            e.printStackTrace();
+            System.out.println("there's no such path \ntry again.");
+            return false;
+            // e.printStackTrace();
         }
+        return true;
     }
-    void Dikstra(int src,int[] cost,int[] parents)
+    void Dijkstra(int src,int[] cost,int[] parents)
     {
         Vector<Boolean> visited=new Vector<Boolean>(V);
         for(int i=0;i<V;i++)
@@ -107,10 +114,7 @@ public class Graph {
              }
          }
         }
-         for(int i=0;i<V;i++)
-         {
-             System.out.println(cost[i]+" "+parents[i]+"\n");
-         }
+
     }
   Boolean  bellmanFord (int src,int[] cost,int[] parents)
   {
@@ -118,36 +122,22 @@ public class Graph {
       {cost[i]=Integer.MAX_VALUE;
           parents[i]=-1;}
       cost[src]=0;
-      for(int i=0;i<V-1;i++)
+      boolean flag =true;
+      for(int i=0;i<=V-1;i++)
           for(int j=0;j<E;j++)
-          {
-              if(cost[edges.get(j).d]>cost[edges.get(j).s]+edges.get(j).w&&cost[edges.get(j).s]!=Integer.MAX_VALUE)
+          {   int d=edges[j].d,s=edges[j].s;
+              if(cost[d]>cost[s]+edges[j].w&&cost[s]!=Integer.MAX_VALUE)
               {
-                  cost[edges.get(j).d]=cost[edges.get(j).s]+edges.get(j).w;
-                  parents[edges.get(j).d]=edges.get(j).s;
+                  cost[d]=cost[s]+edges[j].w;
+                  parents[d]=s;
+                  if(i==V-1)
+                      flag=false;
               }
+             
           }
-      for(int i=0;i<V-1;i++)
-          for(int j=0;j<E;j++)
-          {
-              if(cost[edges.get(j).d]>cost[edges.get(j).s]+edges.get(j).w&&cost[edges.get(j).s]!=Integer.MAX_VALUE)
-              {
-                  cost[edges.get(j).d]=cost[edges.get(j).s]+edges.get(j).w;
-              }
-          }
-      for(int i=0;i<V;i++)
-      {
-          System.out.println(cost[i]+" "+parents[i]+"\n");
-      }
-      for(int i=0;i<V-1;i++)
-          for(int j=0;j<E;j++)
-          {
-              if(cost[edges.get(j).d]>cost[edges.get(j).s]+edges.get(j).w&&cost[edges.get(j).s]!=Integer.MAX_VALUE)
-              {
-                 return false;
-              }
-          }
-     return true;
+
+
+     return flag;
   }
   boolean floyd(int[][]cost,int[][]procedures)
   {
@@ -161,7 +151,7 @@ public class Graph {
           }
       for(int i=0;i<E;i++)
       {
-          cost[edges.get(i).s][edges.get(i).d]=edges.get(i).w;
+          cost[edges[i].s][edges[i].d]=edges[i].w;
       }
       for (int k = 0; k < V; k++) {
           for (int i = 0; i < V; i++) {
@@ -172,15 +162,7 @@ public class Graph {
               }
           }
       }
-      for(int i=0;i<V;i++)
-      {for(int j=0;j<V;j++)
-              System.out.print(cost[i][j]+" ");
-          System.out.println("\n");
-      }
-      for(int i=0;i<V;i++)
-          {for(int j=0;j<V;j++)
-              System.out.print(procedures[i][j]+" ");
-          System.out.println("\n");}
+
       for (int i = 0; i < V; i++)
           if (cost[i][i] < 0)
               return false;

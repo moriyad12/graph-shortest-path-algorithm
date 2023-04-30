@@ -13,11 +13,13 @@ public class CLI {
     int src;
     int[][] costs;
     int[][] pro;
-     void Ini(){
-        System.out.println("Enter abolute path of graph");
-        String dic =sc.nextLine();
-        graph.graphInit(dic);
-
+    void Ini(){
+        boolean pathFound=false;
+        do{
+            System.out.println("Enter abolute path of graph");
+            String dic =sc.nextLine();
+            pathFound= graph.graphInit(dic);
+        }while(!pathFound);
     }
     void calculatePath(int [] parents,int src,int dst)
     {
@@ -80,7 +82,7 @@ public class CLI {
         int choice =Integer.valueOf(sc.nextLine());
         switch (choice){
             case 1:
-            graph.Dikstra(src,cost,parents);
+            graph.Dijkstra(src,cost,parents);
                 break;
             case 2:
                 graph.bellmanFord(src,cost,parents);
@@ -99,7 +101,8 @@ public class CLI {
                     System.out.println("choose a command number:\n" +
                             "[1] cost. \n" +
                             "[2]  path.\n"+
-                            "[3]  Main Menu.\n" );
+                            "[3]  Main Menu.\n"+
+                            "[4]  Back.\n");
                     int choicee =Integer.valueOf(sc.nextLine());
                     switch (choicee){
                         case 1:
@@ -122,8 +125,8 @@ public class CLI {
                             else System.out.println("No path betwen two nodes");}
                             break;
                         case 3:
-                            mainMenu();
-                            break;
+                            return ;
+                        case 4:sunMenu1();
                         default:
                             System.out.println("choose a valid number");
                 }}
@@ -137,12 +140,13 @@ public class CLI {
                 "[1] Dikstra Algorithm. \n" +
                 "[2]  Bellman-Ford Algorithm.\n" +
                 "[3]  Floyd-Warshall Algorithm\n" +
-                "[4] retutn to main menu");
+                "[4]  Back\n."+
+                "[5] retutn to main menu");
         int choice =Integer.valueOf(sc.nextLine());
         switch (choice){
             case 1:
                 for(int i=0;i<graph.Size();i++)
-                    graph.Dikstra(i,costs[i],pro[i]);
+                    graph.Dijkstra(i,costs[i],pro[i]);
                 break;
             case 2:
                 for(int i=0;i<graph.Size();i++)
@@ -152,8 +156,9 @@ public class CLI {
                 graph.floyd(costs,pro);
                 break;
             case 4:
-                mainMenu();
-                break;
+                 sunMenu2();
+            case 5:
+                return ;
             default:
                 System.out.println("choose a valid number");
     }
@@ -198,7 +203,9 @@ public class CLI {
         System.out.println("choose a command number:\n" +
                 "[1]  Bellman-Ford Algorithm.\n" +
                 "[2]  Floyd-Warshall Algorithm\n" +
-                "[3] retutn to main menu");
+                "[3] retutn to main menu\n"+
+                "[4] Back."
+                );
         int choice =Integer.valueOf(sc.nextLine());
         switch (choice){
             case 1:
@@ -208,7 +215,9 @@ public class CLI {
                 System.out.println(graph.floyd(costs,pro));
                 break;
             case 3:
-                mainMenu();
+                return;
+            case 4:
+                sunMen3();
                 break;
             default:
                 System.out.println("choose a valid number");
